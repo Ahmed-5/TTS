@@ -93,7 +93,11 @@ class TextEncoder(nn.Module):
         x = torch.transpose(x, 1, -1)  # [b, h, t]
         x_mask = torch.unsqueeze(sequence_mask(x_lengths, x.size(2)), 1).to(x.dtype)  # [b, 1, t]
 
-        x = self.encoder(x * x_mask, x_mask)
+        # x = self.encoder(x * x_mask, x_mask)
+        # stats = self.proj(x) * x_mask
+
+        x_encoded = self.encoder(x * x_mask, x_mask)
+        x = x + x_encoded
         stats = self.proj(x) * x_mask
 
         m, logs = torch.split(stats, self.out_channels, dim=1)
